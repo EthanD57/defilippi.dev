@@ -1,1 +1,21 @@
 @import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
+
+/* Dark mode scrollbars */
+.dark {
+    scrollbar-color: #4b5563 #1c1c1e; /* Firefox: thumb track */
+}
+
+.dark ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+    background: #1c1c1e;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background-color: #4b5563;
+    border-radius: 4px;
+}
