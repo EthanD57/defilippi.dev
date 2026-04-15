@@ -9,6 +9,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faDumpsterFire} from "@fortawesome/free-solid-svg-icons";
+import BackgroundLogos from "./BackgroundLogos.tsx";
 
 function App() {
     const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
@@ -33,16 +34,16 @@ function App() {
 
     return (
         <div className="min-h-screen transition-colors duration-500 bg-[#f5f5f7] dark:bg-[#1c1c1e] text-[#1d1d1f] dark:text-[#f5f5f7] font-sans">
+            <BackgroundLogos />
             <nav className="sticky top-0 z-50 h-12 flex items-center justify-between px-8 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-black/5 dark:border-white/10">
                 <span className="text-sm font-semibold tracking-tight">Portfolio</span>
                 <Switch />
             </nav>
-
             <header className="py-24 px-6 text-center">
-                <h1 className="text-5xl md:text-6xl font-semibold tracking-tight mb-4">Ethan Defilippi Technical Showcase</h1>
-                <p className="text-xl md:text-2xl text-[#86868b] max-w-2xl mx-auto">Click a project to interact.</p>
-                <p className="text-xl md:text-2xl text-[#86868b] max-w-2xl mx-auto">This website is under construction as of April 10, 2026</p>
-                <p className="text-xl md:text-2xl text-[#86868b] max-w-2xl mx-auto"><span><FontAwesomeIcon icon={faDumpsterFire}/></span> -- Dumpster Fire (Current Website State) </p>
+                <h1 className="z-10 text-5xl md:text-6xl font-semibold tracking-tight mb-4">Ethan Defilippi Technical Showcase</h1>
+                <p className="z-10 text-xl md:text-2xl text-[#86868b] max-w-2xl mx-auto">Click a project to interact.</p>
+                <p className="z-10 text-xl md:text-2xl text-[#86868b] max-w-2xl mx-auto">This website is under construction as of April 10, 2026</p>
+                <p className="z-10 text-xl md:text-2xl text-[#86868b] max-w-2xl mx-auto"><span><FontAwesomeIcon icon={faDumpsterFire}/></span> -- Dumpster Fire (Current Website State) </p>
             </header>
 
             <section className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -53,7 +54,7 @@ function App() {
                             setActiveProjectId(project.id);
                             setSelectedFile(findFirstFile(project.files)); // Reset to first file on open
                         }}
-                        className="group bg-white dark:bg-[#0D0C0C] rounded-4xl p-10 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-2 cursor-pointer"
+                        className="group z-10 bg-white dark:bg-[#0D0C0C] rounded-4xl p-10 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-2 cursor-pointer"
                     >
                         <h3 className="text-2xl font-semibold mb-2">{project.title}</h3>
                         <p className="text-[#86868b]">{project.description}</p>

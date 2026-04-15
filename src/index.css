@@ -19,3 +19,14 @@
     background-color: #4b5563;
     border-radius: 4px;
 }
+
+/* Background float animation */
+@theme {
+    --animate-float: float linear infinite;
+
+    @keyframes float {
+        from { transform: translateX(0); }
+        to   { transform: translateX(130vw); }
+    }
+
+}
