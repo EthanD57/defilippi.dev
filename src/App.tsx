@@ -2,14 +2,15 @@ import { useState } from 'react';
 import { projects } from './projects';
 import type { ProjectFile, ProjectFolder } from './projects';
 import Switch from './components/Switch.tsx'
-import FileTree from './FileTree';
+import FileTree from './components/FileTree';
+import BackgroundLogos from "./components/BackgroundLogos.tsx";
+import WordleBot from './components/WordleBot';
 
 //Makes the code windows look like IDEs
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faDumpsterFire} from "@fortawesome/free-solid-svg-icons";
-import BackgroundLogos from "./BackgroundLogos.tsx";
 
 function App() {
     const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
@@ -72,7 +73,7 @@ function App() {
                             <h2 className="text-xl font-semibold">{activeProject.title}</h2>
                             <button onClick={() => setActiveProjectId(null)} className="bg-gray-100 dark:bg-[#1C1A1B] rounded-full h-8 w-8">✕</button>
                         </div>
-
+                        <WordleBot/>
                         <div className="flex flex-1 overflow-hidden">
                             {/* SIDEBAR: File Tree */}
                             <aside className="w-min border-r border-gray-100 bg-gray-50/50 dark:bg-[#0D0C0C] dark:border-[#0D0C0C] p-6 overflow-y-visible overflow-x-hidden">
@@ -107,11 +108,6 @@ function App() {
                                         {selectedFile?.content || ''}
                                     </SyntaxHighlighter>
                                     </div>
-                                </div>
-
-                                {/* IFRAME: External Output */}
-                                <div className="h-1/3 border-t border-gray-100 bg-black relative">
-                                    <iframe src={activeProject.iframeUrl} className="w-full h-full border-none"/>
                                 </div>
                             </main>
                         </div>
