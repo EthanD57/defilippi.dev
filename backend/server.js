@@ -22,7 +22,7 @@ const limiter = rateLimit({
 
 app.use('/api/', limiter);
 
-// Service URLs - will be environment variables for Railway
+// Service URLs
 const WORDLE_BOT_URL = process.env.WORDLE_BOT_URL || 'http://localhost:5000';
 
 // Health check

@@ -46,7 +46,7 @@ export default function ProjectModal({project}: ProjectRunnerProps) {
     const [activeTab, setActiveTab] = useState<'code' | 'play'>('code');
     const [selectedFile, setSelectedFile] = useState<ProjectFile | null>(null);
 
-    const BACKEND_URL = 'https://your-railway-app.up.railway.app';
+    const WORDLE_BOT_URL = 'https://your-railway-app.up.railway.app';
 
     useEffect(() => {
         setSelectedFile(findFirstFile(project.files));
@@ -56,7 +56,7 @@ export default function ProjectModal({project}: ProjectRunnerProps) {
     useEffect(() => {
         const fetchModels = async () => {
             try {
-                const response = await fetch(`${BACKEND_URL}/api/wordle/models`);
+                const response = await fetch(`${WORDLE_BOT_URL}/api/wordle/models`);
                 const data = await response.json();
                 if (data.models) {
                     setModels(data.models);
@@ -67,7 +67,7 @@ export default function ProjectModal({project}: ProjectRunnerProps) {
         };
 
         fetchModels();
-    }, [BACKEND_URL]);
+    }, [WORDLE_BOT_URL]);
 
     const handlePlayGame = async () => {
         setLoading(true);
@@ -75,7 +75,7 @@ export default function ProjectModal({project}: ProjectRunnerProps) {
         setResult(null);
 
         try {
-            const response = await fetch(`${BACKEND_URL}/api/wordle/play`, {
+            const response = await fetch(`${WORDLE_BOT_URL}/api/wordle/play`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
