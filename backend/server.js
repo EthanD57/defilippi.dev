@@ -6,7 +6,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
-  origin: 'https://defilippi.dev/',
+  origin: 'https://defilippi.dev',
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));app.use(express.json());
