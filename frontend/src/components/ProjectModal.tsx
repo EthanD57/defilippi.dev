@@ -46,7 +46,7 @@ export default function ProjectModal({project}: ProjectRunnerProps) {
     const [activeTab, setActiveTab] = useState<'code' | 'play'>('code');
     const [selectedFile, setSelectedFile] = useState<ProjectFile | null>(null);
 
-    const WORDLE_BOT_URL = 'https://your-railway-app.up.railway.app';
+    const WORDLE_BOT_URL = 'nodejs-server-production-283e.up.railway.app';
 
     useEffect(() => {
         setSelectedFile(findFirstFile(project.files));
