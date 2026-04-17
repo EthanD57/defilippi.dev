@@ -24,7 +24,6 @@ export interface Project {
     id: string;
     title: string;
     description: string;
-    backendURL: string;
     files: (ProjectFile | ProjectFolder)[];
 }
 
@@ -33,7 +32,6 @@ export const projects: Project[] = [
         id: 'project-1',
         title: 'ML & Algorithmic Implementations For Solving Wordle',
         description: 'Different Implementations for Solving Wordle Using ML and Classic Algorithmic Approach.',
-        backendURL: 'http://localhost:3000',
         files: [
             {
             name: 'ML',

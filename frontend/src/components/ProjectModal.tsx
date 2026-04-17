@@ -46,7 +46,7 @@ export default function ProjectModal({project}: ProjectRunnerProps) {
     const [activeTab, setActiveTab] = useState<'code' | 'play'>('code');
     const [selectedFile, setSelectedFile] = useState<ProjectFile | null>(null);
 
-    const BACKEND_URL = project.backendURL;
+    const BACKEND_URL = 'https://your-railway-app.up.railway.app';
 
     useEffect(() => {
         setSelectedFile(findFirstFile(project.files));
