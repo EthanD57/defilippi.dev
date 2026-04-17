@@ -12,6 +12,8 @@ const corsOptions = {
 app.use(cors(corsOptions));app.use(express.json());
 
 // server.js
+app.set('trust proxy', 1);
+
 const rateLimit = require('express-rate-limit');
 
 const limiter = rateLimit({
@@ -20,7 +22,7 @@ const limiter = rateLimit({
   message: { error: 'Too many requests, please try again later.' }
 });
 
-app.use('/api/', limiter);
+app.use('/api', limiter);
 
 // Service URLs
 const WORDLE_BOT_URL = process.env.WORDLE_BOT_URL || 'http://localhost:5000';
