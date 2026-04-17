@@ -55,6 +55,7 @@ export default function ProjectModal({project}: ProjectRunnerProps) {
     // Fetch available models on mount
     useEffect(() => {
         const fetchModels = async () => {
+            console.log("Fetching from:", (`${WORDLE_BOT_URL}/api/wordle/models`));
             try {
                 const response = await fetch(`${WORDLE_BOT_URL}/api/wordle/models`);
                 const data = await response.json();
