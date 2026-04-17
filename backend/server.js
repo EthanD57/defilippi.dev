@@ -124,11 +124,8 @@ app.get('/api/wordle/models', async (req, res) => {
       { method: 'GET' },
       5000 // 5 second timeout
     );
-    console.error(`[Models] Flask response status: ${response.status}`);
 
     const data = await response.json();
-
-    console.error(`[Models] Flask response body:`, data);
 
     if (!response.ok) {
       return res.status(response.status).json(data);
@@ -136,7 +133,15 @@ app.get('/api/wordle/models', async (req, res) => {
 
     res.json(data);
   } catch (error) {
-    console.error('Error fetching models:', error.message);
+    console.error(`[Wordle] FETCH ERROR (before response):`, {
+      message: error.message,
+      name: error.name,
+      code: error.code,
+      errno: error.errno,
+      syscall: error.syscall,
+      hostname: error.hostname,
+      fullError: error.toString()
+    });
     res.status(500).json({
       success: false,
       error: 'Could not fetch available models'
