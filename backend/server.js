@@ -124,9 +124,11 @@ app.get('/api/wordle/models', async (req, res) => {
       { method: 'GET' },
       5000 // 5 second timeout
     );
-    console.log(`[Models] Flask response status: ${response.status}`);
+    console.error(`[Models] Flask response status: ${response.status}`);
 
     const data = await response.json();
+
+    console.error(`[Models] Flask response body:`, data);
 
     if (!response.ok) {
       return res.status(response.status).json(data);
