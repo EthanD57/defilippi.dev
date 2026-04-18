@@ -36,6 +36,21 @@ function findFirstFile(items: (ProjectFile | ProjectFolder)[]): ProjectFile | nu
     return null;
 }
 
+function flattenFiles(
+    items: (ProjectFile | ProjectFolder)[],
+    prefix = ''
+): {file: ProjectFile; path: string}[] {
+    const result: {file: ProjectFile; path: string}[] = [];
+    for (const item of items) {
+        if (item.type === 'file') {
+            result.push({file: item, path: prefix + item.name});
+        } else {
+            result.push(...flattenFiles(item.children, prefix + item.name + '/'));
+        }
+    }
+    return result;
+}
+
 export default function ProjectModal({project}: ProjectRunnerProps) {
     const [models, setModels] = useState<string[]>([]);
     const [selectedModel, setSelectedModel] = useState('entropy_maximization');
@@ -46,13 +61,13 @@ export default function ProjectModal({project}: ProjectRunnerProps) {
     const [activeTab, setActiveTab] = useState<'code' | 'play'>('code');
     const [selectedFile, setSelectedFile] = useState<ProjectFile | null>(null);
 
-    const WORDLE_BOT_URL = 'https://nodejs-server-production-283e.up.railway.app';
+    const WORDLE_BOT_URL = 'http://127.0.0.1:3000';
+    const flatFiles = flattenFiles(project.files);
 
     useEffect(() => {
         setSelectedFile(findFirstFile(project.files));
     }, [project.files, project.id]);
 
-    // Fetch available models on mount
     useEffect(() => {
         const fetchModels = async () => {
             console.log("Fetching from:", (`${WORDLE_BOT_URL}/api/wordle/models`));
@@ -102,10 +117,14 @@ export default function ProjectModal({project}: ProjectRunnerProps) {
         }
     };
 
+    const selectedPath = selectedFile
+        ? flatFiles.find(f => f.file === selectedFile)?.path ?? selectedFile.name
+        : '';
+
     return (
-        <div className="flex flex-col gap-6 p-6 bg-white dark:bg-[#0D0C0C] rounded-xl">
+        <div className="flex flex-col p-2 bg-white dark:bg-[#0D0C0C] rounded-xl overflow-x-hidden">
             {/* Segmented Control Tabs */}
-            <div className="flex justify-center p-4 border-b dark:border-[#1C1A1B]">
+            <div className="flex justify-center p-2 dark:border-[#1C1A1B]">
                 <div className="flex bg-gray-100 dark:bg-[#1C1A1B] p-1 rounded-xl">
                     <button
                         onClick={() => setActiveTab('code')}
@@ -121,55 +140,64 @@ export default function ProjectModal({project}: ProjectRunnerProps) {
                     </button>
                 </div>
             </div>
-            {/* Conditional Rendering based on Tab */}
-            <div className="flex-1 overflow-hidden">
-                {activeTab === 'code' ? (
-                    <div className="flex h-full">
-                        <div className="flex flex-1 overflow-hidden">
-                            {/* SIDEBAR: File Tree */}
-                            <aside
-                                className="w-min border-r border-gray-100 bg-gray-50/50 dark:bg-[#0D0C0C] dark:border-[#0D0C0C] p-6 overflow-y-visible overflow-x-hidden">
-                                <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-4 ">Files</h4>
-                                <aside
-                                    className="w-min border-r border-gray-100 dark:border-[#0D0C0C] bg-gray-50/50 dark:bg-[#1C1A1B] p-6 overflow-hidden">
-                                    <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-4">Project
-                                        Files</h4>
-                                    <FileTree
-                                        items={project.files}
-                                        onFileClick={(file) => setSelectedFile(file)}
-                                        selectedFile={selectedFile?.name ?? null}
-                                    />
-                                </aside>
-                            </aside>
 
-                            {/* MAIN CONTENT: Dynamic Code Viewer */}
-                            <main className="flex-1 min-w-0 flex flex-col bg-white dark:bg-[#0D0C0C]">
-                                <div className="flex-1 overflow-auto bg-[#282c34]"> {/* One Dark background color */}
-                                    <div style={{
-                                        width: 'max-content',
-                                        minWidth: '100%',
-                                        paddingRight: '12px',
-                                        boxSizing: 'border-box'
-                                    }}>
-                                        <SyntaxHighlighter
-                                            language={selectedFile?.language || 'python'}  /* I will inevitably forget this, so this stops a crash */
-                                            style={oneDark}
-                                            customStyle={{
-                                                margin: 0,
-                                                padding: '24px',
-                                                fontSize: '14px',
-                                                lineHeight: '1.5',
-                                                backgroundColor: 'transparent',
-                                                overflow: 'visible',
-                                                minHeight: '100%',
-                                            }}
-                                        >
-                                            {selectedFile?.content || ''}
-                                        </SyntaxHighlighter>
-                                    </div>
-                                </div>
-                            </main>
+            {/* Conditional Rendering based on Tab */}
+            <div className="flex-1 overflow-x-auto">
+                {activeTab === 'code' ? (
+                    <div className="flex flex-col md:flex-row h-full">
+                        {/* Mobile: dropdown file selector */}
+                        <div className="md:hidden px-3 py-2 border-b border-gray-200 dark:border-[#1C1A1B] bg-gray-50 dark:bg-[#0D0C0C]">
+                            <select
+                                value={selectedPath}
+                                onChange={(e) => {
+                                    const match = flatFiles.find(f => f.path === e.target.value);
+                                    if (match) setSelectedFile(match.file);
+                                }}
+                                className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-[#1C1A1B] bg-white dark:bg-[#1C1A1B] text-sm text-gray-900 dark:text-white"
+                            >
+                                {flatFiles.map(({path}) => (
+                                    <option key={path} value={path}>{path}</option>
+                                ))}
+                            </select>
                         </div>
+
+                        {/* Desktop: sidebar file tree */}
+                        <aside className="hidden md:flex flex-col w-max shrink-0 border-r border-gray-100 dark:border-[#1C1A1B] bg-gray-50/50 dark:bg-[#0D0C0C] p-4 overflow-y-auto">
+                            <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-3">Files</h4>
+                            <FileTree
+                                items={project.files}
+                                onFileClick={(file) => setSelectedFile(file)}
+                                selectedFile={selectedFile?.name ?? null}
+                            />
+                        </aside>
+
+                        {/* Code viewer */}
+                        <main className="flex-1 min-w-0 flex flex-col bg-white dark:bg-[#0D0C0C] overflow-hidden">
+                            <div className="flex overflow-auto bg-[#282c34] rounded-xl m-2">
+                                <div style={{
+                                    width: 'max-content',
+                                    minWidth: '100%',
+                                    paddingRight: '12px',
+                                    boxSizing: 'border-box'
+                                }}>
+                                    <SyntaxHighlighter
+                                        language={selectedFile?.language || 'python'}
+                                        style={oneDark}
+                                        customStyle={{
+                                            margin: 0,
+                                            padding: '24px',
+                                            fontSize: '14px',
+                                            lineHeight: '1.5',
+                                            backgroundColor: 'transparent',
+                                            overflow: 'visible',
+                                            minHeight: '100%',
+                                        }}
+                                    >
+                                        {selectedFile?.content || ''}
+                                    </SyntaxHighlighter>
+                                </div>
+                            </div>
+                        </main>
                     </div>
                 ) : (
                     <div className="h-full overflow-y-auto p-6">
@@ -227,8 +255,7 @@ export default function ProjectModal({project}: ProjectRunnerProps) {
 
                         {/* Error Display */}
                         {error && (
-                            <div
-                                className="p-4 bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200 rounded-lg">
+                            <div className="p-4 bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200 rounded-lg">
                                 <p className="font-semibold">Error</p>
                                 <p>{error}</p>
                             </div>
@@ -248,11 +275,8 @@ export default function ProjectModal({project}: ProjectRunnerProps) {
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="font-semibold">Guesses:</span>
-                                        <span
-                                            className={`font-semibold ${
-                                                result.won ? 'text-green-600 dark:text-green-400' :
-                                                    'text-red-600 dark:text-red-400'}`}
-                                        >{result.num_guesses}/6 {result.won ? '✓ Won' : '✗ Lost'}
+                                        <span className={`font-semibold ${result.won ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                                            {result.num_guesses}/6 {result.won ? '✓ Won' : '✗ Lost'}
                                         </span>
                                     </div>
                                 </div>
@@ -267,10 +291,9 @@ export default function ProjectModal({project}: ProjectRunnerProps) {
                                                 <div className="flex gap-1">
                                                     {guess.guess.split('').map((letter, letterIdx) => {
                                                         const score = guess.score[letterIdx];
-                                                        let bgColor = 'bg-gray-400'; // Wrong (0)
-                                                        if (score === 1) bgColor = 'bg-yellow-500'; // Wrong position (1)
-                                                        if (score === 2) bgColor = 'bg-green-500'; // Correct (2)
-
+                                                        let bgColor = 'bg-gray-400';
+                                                        if (score === 1) bgColor = 'bg-yellow-500';
+                                                        if (score === 2) bgColor = 'bg-green-500';
                                                         return (
                                                             <div
                                                                 key={letterIdx}
