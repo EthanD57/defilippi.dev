@@ -61,7 +61,7 @@ export default function ProjectModal({project}: ProjectRunnerProps) {
     const [activeTab, setActiveTab] = useState<'code' | 'play'>('code');
     const [selectedFile, setSelectedFile] = useState<ProjectFile | null>(null);
 
-    const WORDLE_BOT_URL = 'http://127.0.0.1:3000';
+    const WORDLE_BOT_URL = 'https://nodejs-server-production-283e.up.railway.app';
     const flatFiles = flattenFiles(project.files);
 
     useEffect(() => {
