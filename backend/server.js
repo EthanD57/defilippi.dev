@@ -6,7 +6,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
-  origin: 'https://defilippi.dev',
+  origin: '*',  //TODO: CHANGE THIS BACK
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));app.use(express.json());
@@ -25,7 +25,7 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 // Service URLs
-const WORDLE_BOT_URL = process.env.WORDLE_BOT_URL || 'http://localhost:5000';
+const WORDLE_BOT_URL = process.env.WORDLE_BOT_URL || 'http://127.0.0.1:5000';
 
 // Health check
 app.get('/health', (req, res) => {
