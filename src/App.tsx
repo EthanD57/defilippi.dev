@@ -20,7 +20,8 @@ function App() {
             <header className="py-24 px-6 text-center">
                 <h1 className="z-10 text-5xl md:text-6xl font-semibold tracking-tight mb-4">Ethan Defilippi Technical Showcase</h1>
                 <p className="z-10 text-xl md:text-2xl text-[#86868b] max-w-2xl mx-auto">Click a project to interact.</p>
-                <p className="z-10 text-xl md:text-2xl text-[#86868b] max-w-2xl mx-auto">This website is under construction as of April 10, 2026</p>
+                <p className="z-10 text-xl md:text-2xl text-[#86868b] max-w-2xl mx-auto">This website is currently undergoing a backend overhaul!</p>
+                <p className="z-10 text-xl md:text-2xl text-[#86868b] max-w-2xl mx-auto">Please excuse the lack of content for now...</p>
             </header>
 
             <section className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
