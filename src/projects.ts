@@ -1,5 +1,6 @@
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faPython, faJs } from '@fortawesome/free-brands-svg-icons';
+import { faFileLines, faFile } from '@fortawesome/free-solid-svg-icons';
 
 export { faPython, faJs };
 
@@ -7,6 +8,11 @@ export const iconMap: Record<string, IconDefinition> = {
     python: faPython,
     js: faJs,
     javascript: faJs,
+    markdown: faFileLines,
+    md: faFileLines,
+    text: faFile,
+    txt: faFile,
+    plaintext: faFile,
 };
 
 export interface ProjectFile {
