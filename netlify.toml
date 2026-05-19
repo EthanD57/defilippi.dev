@@ -1,0 +1,11 @@
+[[redirects]]
+from = "/api/*"
+to = "https://portfolio-production-5952.up.railway.app/api/:splat"
+status = 200
+force = true
+signed = "API_SIGNATURE_TOKEN"
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
