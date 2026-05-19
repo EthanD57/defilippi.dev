@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 const Switch = () => {
-    const [isDark, setIsDark] = useState(false);
+    const [isDark, setIsDark] = useState(true);
 
     useEffect(() => {
         document.documentElement.classList.toggle('dark', isDark);
