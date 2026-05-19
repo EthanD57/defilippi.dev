@@ -27,7 +27,7 @@ const items = Array.from({ length: 20 }).map((_, i) => {
 
 const BackgroundLogos = () => {
     return (
-        <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none opacity-20">
+        <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none opacity-10">
             {items.map((item, i) => (
                 <img
                     key={i}
