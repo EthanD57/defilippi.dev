@@ -5,6 +5,7 @@ import type {Project, ProjectFile, ProjectFolder} from "../projects.ts";
 import FileTree from "./FileTree.tsx";
 import {Prism as SyntaxHighlighter} from "react-syntax-highlighter";
 import {oneDark} from "react-syntax-highlighter/dist/esm/styles/prism";
+import { API_BASE } from '../api';
 
 interface GuessResult {
     guess: string;
@@ -61,7 +62,6 @@ export default function WordleBotModal({project}: ProjectRunnerProps) {
     const [activeTab, setActiveTab] = useState<'code' | 'play'>('code');
     const [selectedFile, setSelectedFile] = useState<ProjectFile | null>(null);
 
-    const WORDLE_BOT_URL = '';
     const flatFiles = flattenFiles(project.files);
 
     useEffect(() => {
@@ -70,9 +70,8 @@ export default function WordleBotModal({project}: ProjectRunnerProps) {
 
     useEffect(() => {
         const fetchModels = async () => {
-            console.log("Fetching from:", (`${WORDLE_BOT_URL}/api/wordle-bot/models`));
             try {
-                const response = await fetch(`${WORDLE_BOT_URL}/api/wordle-bot/models`);
+                const response = await fetch(`${API_BASE}/api/wordle/models`);
                 const data = await response.json();
                 if (data.models) {
                     setModels(data.models);
@@ -83,7 +82,7 @@ export default function WordleBotModal({project}: ProjectRunnerProps) {
         };
 
         fetchModels();
-    }, [WORDLE_BOT_URL]);
+    }, []);
 
     const handlePlayGame = async () => {
         setLoading(true);
@@ -91,7 +90,7 @@ export default function WordleBotModal({project}: ProjectRunnerProps) {
         setResult(null);
 
         try {
-            const response = await fetch(`${WORDLE_BOT_URL}/api/wordle-bot/play`, {
+            const response = await fetch(`${API_BASE}/api/wordle/play`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
