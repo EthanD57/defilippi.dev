@@ -3,8 +3,7 @@ from = "/api/*"
 to = "https://portfolio-production-5952.up.railway.app/api/:splat"
 status = 200
 force = true
-[redirects.headers]
-X-NF-Sign = "API_SIGNATURE_TOKEN"
+signed = "API_SIGNATURE_TOKEN"
 
 [[redirects]]
 from = "/*"
