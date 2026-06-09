@@ -7,6 +7,7 @@ import { fetchProjectSummaries, fetchProjectDetail } from './api';
 import Switch from './components/Switch.tsx'
 import BackgroundLogos from "./components/BackgroundLogos.tsx";
 import WordleBotModal from './components/WordleBotModal.tsx';
+import LunarLanderModal from './components/LunarLanderModal.tsx';
 import { About } from './pages/About.tsx';
 import { Contact } from './pages/Contact.tsx';
 
@@ -69,7 +70,9 @@ function App() {
                             <button onClick={closeModal} className="bg-gray-100 dark:bg-[#1C1A1B] rounded-full h-8 w-8">✕</button>
                         </div>
                         {activeProject
-                            ? <WordleBotModal project={activeProject} />
+                            ? activeProject.slug.includes('lunar')
+                                ? <LunarLanderModal project={activeProject} />
+                                : <WordleBotModal project={activeProject} />
                             : (
                                 <div className="flex-1 flex items-center justify-center">
                                     <FontAwesomeIcon icon={faSpinner} className="animate-spin text-4xl text-gray-400" />
