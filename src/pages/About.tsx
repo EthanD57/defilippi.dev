@@ -15,11 +15,9 @@ export function About() {
             <section className="mb-16">
                 <h2 className="text-2xl font-semibold mb-4">About Me</h2>
                 <div className="bg-white text-black dark:bg-[#0D0C0C] rounded-3xl p-8 dark:text-white">
-                    <p>Hello, I’m Ethan! I'm a software engineer and University of Pittsburgh graduate with a passion
+                    <p>Hello, I’m Ethan! I am a University of Pittsburgh graduate and a junior full-stack Java developer at PNC with a passion
                         for backend architecture and systems programming. I love diving into the details of data and
-                        performance, primarily working with Python, Rust, Java, C, and PostgreSQL. I’m currently
-                        refining my engineering skills through dedicated personal projects and searching for a
-                        backend-focused role where I can hit the ground running.</p>
+                        performance, primarily working with Python, Rust, Java, C, and PostgreSQL. </p>
                 </div>
             </section>
 
