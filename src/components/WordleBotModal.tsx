@@ -21,6 +21,7 @@ interface GameResult {
     num_guesses: number;
     guesses: GuessResult[];
     error?: string;
+    note?: string | null;
 }
 
 interface ProjectRunnerProps {
@@ -231,12 +232,12 @@ export default function WordleBotModal({project}: ProjectRunnerProps) {
 
                             <div>
                                 <label className="block text-sm font-semibold mb-2">
-                                    Word (optional - random if blank)
+                                    Word (optional - any 5 letters, random if blank)
                                 </label>
                                 <input
                                     type="text"
                                     value={word}
-                                    onChange={(e) => setWord(e.target.value.slice(0, 5).toUpperCase())}
+                                    onChange={(e) => setWord(e.target.value.replace(/[^a-zA-Z]/g, '').slice(0, 5).toUpperCase())}
                                     disabled={loading}
                                     maxLength={5}
                                     placeholder="e.g., CRANE"
@@ -246,7 +247,7 @@ export default function WordleBotModal({project}: ProjectRunnerProps) {
 
                             <button
                                 onClick={handlePlayGame}
-                                disabled={loading}
+                                disabled={loading || (word.length > 0 && word.length < 5)}
                                 className="w-full px-6 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
                             >
                                 {loading ? (
@@ -289,6 +290,9 @@ export default function WordleBotModal({project}: ProjectRunnerProps) {
                                             {result.num_guesses}/6 {result.won ? '✓ Won' : '✗ Lost'}
                                         </span>
                                     </div>
+                                    {result.note && (
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">{result.note}</p>
+                                    )}
                                 </div>
 
                                 {/* Guess History */}
