@@ -6,6 +6,7 @@ import FileTree from "./FileTree.tsx";
 import {Prism as SyntaxHighlighter} from "react-syntax-highlighter";
 import {oneDark} from "react-syntax-highlighter/dist/esm/styles/prism";
 import { API_BASE } from '../api';
+import WordleAssistPanel from './WordleAssistPanel.tsx';
 
 interface GuessResult {
     guess: string;
@@ -59,7 +60,8 @@ export default function WordleBotModal({project}: ProjectRunnerProps) {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<GameResult | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<'code' | 'play'>('code');
+    const [activeTab, setActiveTab] = useState<'code' | 'play' | 'solve'>('code');
+    const [solveOpened, setSolveOpened] = useState(false);
     const [selectedFile, setSelectedFile] = useState<ProjectFile | null>(null);
 
     const flatFiles = flattenFiles(project.files);
@@ -127,15 +129,24 @@ export default function WordleBotModal({project}: ProjectRunnerProps) {
                 <div className="flex bg-gray-100 dark:bg-[#1C1A1B] p-1 rounded-xl">
                     <button
                         onClick={() => setActiveTab('code')}
-                        className={`px-6 py-1.5 rounded-lg text-sm transition-all ${activeTab === 'code' ? 'bg-white dark:bg-gray-600 shadow-sm' : 'opacity-50'}`}
+                        className={`px-3 sm:px-6 py-1.5 rounded-lg text-sm transition-all ${activeTab === 'code' ? 'bg-white dark:bg-gray-600 shadow-sm' : 'opacity-50'}`}
                     >
                         Source Code
                     </button>
                     <button
                         onClick={() => setActiveTab('play')}
-                        className={`px-6 py-1.5 rounded-lg text-sm transition-all ${activeTab === 'play' ? 'bg-white dark:bg-gray-600 shadow-sm' : 'opacity-50'}`}
+                        className={`px-3 sm:px-6 py-1.5 rounded-lg text-sm transition-all ${activeTab === 'play' ? 'bg-white dark:bg-gray-600 shadow-sm' : 'opacity-50'}`}
                     >
                         Interactive Demo
+                    </button>
+                    <button
+                        onClick={() => {
+                            setActiveTab('solve');
+                            setSolveOpened(true);
+                        }}
+                        className={`px-3 sm:px-6 py-1.5 rounded-lg text-sm transition-all ${activeTab === 'solve' ? 'bg-white dark:bg-gray-600 shadow-sm' : 'opacity-50'}`}
+                    >
+                        Solve Today's
                     </button>
                 </div>
             </div>
@@ -198,7 +209,7 @@ export default function WordleBotModal({project}: ProjectRunnerProps) {
                             </div>
                         </main>
                     </div>
-                ) : (
+                ) : activeTab === 'play' ? (
                     <div className="h-full overflow-y-auto p-6">
                         {/* Controls */}
                         <div className="space-y-4">
@@ -309,6 +320,13 @@ export default function WordleBotModal({project}: ProjectRunnerProps) {
                                 </div>
                             </div>
                         )}
+                    </div>
+                ) : null}
+
+                {/* Kept mounted once opened so switching tabs doesn't lose an in-progress game */}
+                {solveOpened && (
+                    <div className={activeTab === 'solve' ? 'h-full' : 'hidden'}>
+                        <WordleAssistPanel/>
                     </div>
                 )}
             </div>
