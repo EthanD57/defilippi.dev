@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faSpinner, faRotateLeft, faArrowRotateRight} from '@fortawesome/free-solid-svg-icons';
 import { API_BASE } from '../api';
@@ -20,6 +20,15 @@ interface AssistResult {
 const MAX_TURNS = 6;
 const EMPTY_SCORE = [0, 0, 0, 0, 0];
 
+// The bot always opens with CRANE, so a fresh game doesn't need a round trip to the server
+const OPENING_SUGGESTION: AssistResult = {
+    success: true,
+    solved: false,
+    next_guess: 'crane',
+    remaining_count: 12972,
+    remaining_words: [],
+};
+
 function tileColor(score: number): string {
     if (score === 2) return 'bg-green-500';
     if (score === 1) return 'bg-yellow-500';
@@ -28,44 +37,57 @@ function tileColor(score: number): string {
 
 export default function WordleAssistPanel() {
     const [history, setHistory] = useState<Turn[]>([]);
-    const [word, setWord] = useState('');
+    const [word, setWord] = useState('CRANE');
     const [score, setScore] = useState<number[]>(EMPTY_SCORE);
-    const [suggestion, setSuggestion] = useState<AssistResult | null>(null);
+    const [suggestion, setSuggestion] = useState<AssistResult | null>(OPENING_SUGGESTION);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     // Ask the bot for its next guess given every turn played so far.
     // Only commits the new history if the bot accepts it, so bad colors can be fixed and resubmitted.
+    const applySuggestion = (nextHistory: Turn[], data: AssistResult) => {
+        setHistory(nextHistory);
+        setSuggestion(data);
+        setWord((data.next_guess ?? '').toUpperCase());
+        setScore(EMPTY_SCORE);
+    };
+
     const requestSuggestion = async (nextHistory: Turn[]) => {
-        setLoading(true);
         setError(null);
+        if (nextHistory.length === 0) {
+            applySuggestion(nextHistory, OPENING_SUGGESTION);
+            return;
+        }
+
+        setLoading(true);
         try {
             const response = await fetch(`${API_BASE}/api/wordle/assist`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({history: nextHistory}),
             });
-            const data: AssistResult = await response.json();
+
+            // Railway can answer with an HTML error page while the bot is waking up or redeploying
+            let data: AssistResult;
+            try {
+                data = JSON.parse(await response.text());
+            } catch {
+                setError("The bot didn't respond properly. It may be waking up, so give it a few seconds and try again.");
+                return;
+            }
 
             if (!data.success) {
                 setError(data.error || 'Unknown error occurred');
                 return;
             }
 
-            setHistory(nextHistory);
-            setSuggestion(data);
-            setWord((data.next_guess ?? '').toUpperCase());
-            setScore(EMPTY_SCORE);
+            applySuggestion(nextHistory, data);
         } catch (err) {
             setError(`Error: ${err instanceof Error ? err.message : String(err)}`);
         } finally {
             setLoading(false);
         }
     };
-
-    useEffect(() => {
-        requestSuggestion([]);
-    }, []);
 
     const cycleTile = (idx: number) => {
         setScore(prev => prev.map((s, i) => (i === idx ? (s + 1) % 3 : s)));
