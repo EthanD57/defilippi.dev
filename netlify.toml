@@ -1,8 +1,12 @@
+[build]
+command = "npm run build"
+publish = "dist"
+
 [[edge_functions]]
 path = "/api/*"
 function = "api-proxy"
 
 [[redirects]]
 from = "/*"
-to = "/index.html"
+to = "/200.html"
 status = 200

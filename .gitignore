@@ -25,3 +25,6 @@ dist-ssr
 *.sw?
 .claude/settings.local.json
 /public/_redirects
+
+# SvelteKit
+.svelte-kit
