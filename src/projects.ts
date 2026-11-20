@@ -69,7 +69,7 @@ export const pizzaGameProject: Project = {
     id: 'pizza-rush',
     slug: 'pizza-rush',
     title: 'Pizza Rush',
-    description: 'Customers order, you build the pizzas before they run out of patience. The shop gets busier the longer you last. Runs entirely in the browser.',
+    description: 'Customers order, you build the pizzas before they run out of patience. The shop gets busier the longer you last. Game idea by Ava.',
     files: [
         {
             name: 'PizzaGameModal.tsx',

@@ -784,6 +784,7 @@ function PizzaGame() {
                     <button onClick={() => dispatch({type: 'start'})} className={`${PRIMARY_BTN} w-full`}>
                         <FontAwesomeIcon icon={faPlay}/> Open the shop
                     </button>
+                    <p className="text-xs text-[#86868b]">Game idea by Ava 🍕</p>
                 </Overlay>
             )}
             {s.phase === 'paused' && (
