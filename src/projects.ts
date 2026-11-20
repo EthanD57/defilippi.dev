@@ -2,6 +2,7 @@ import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faPython, faJs, faReact } from '@fortawesome/free-brands-svg-icons';
 import { faFileLines, faFile } from '@fortawesome/free-solid-svg-icons';
 import mazeSolverSource from './components/MazeSolverModal.tsx?raw';
+import pizzaGameSource from './components/PizzaGameModal.tsx?raw';
 
 export { faPython, faJs };
 
@@ -63,3 +64,22 @@ export const mazeSolverProject: Project = {
         },
     ],
 };
+
+export const pizzaGameProject: Project = {
+    id: 'pizza-rush',
+    slug: 'pizza-rush',
+    title: 'Pizza Rush',
+    description: 'Customers order, you build the pizzas before they run out of patience. The shop gets busier the longer you last. Runs entirely in the browser.',
+    files: [
+        {
+            name: 'PizzaGameModal.tsx',
+            language: 'tsx',
+            icon: faReact,
+            type: 'file',
+            content: pizzaGameSource,
+        },
+    ],
+};
+
+// Every front-end-only project, in the order they appear after the backend ones.
+export const localProjects: Project[] = [mazeSolverProject, pizzaGameProject];
