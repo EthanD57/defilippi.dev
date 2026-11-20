@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { NavLink, Route, Routes } from 'react-router-dom';
-import { mazeSolverProject } from './projects';
+import { mazeSolverProject, pizzaGameProject, localProjects } from './projects';
 import type { ProjectSummary, Project } from './projects';
 import { fetchProjectSummaries, fetchProjectDetail } from './api';
 import Switch from './components/Switch.tsx'
@@ -10,6 +10,7 @@ import BackgroundLogos from "./components/BackgroundLogos.tsx";
 import WordleBotModal from './components/WordleBotModal.tsx';
 import LunarLanderModal from './components/LunarLanderModal.tsx';
 import MazeSolverModal from './components/MazeSolverModal.tsx';
+import PizzaGameModal from './components/PizzaGameModal.tsx';
 import { About } from './pages/About.tsx';
 import { Contact } from './pages/Contact.tsx';
 import { Secret } from './pages/Secret.tsx';
@@ -26,8 +27,9 @@ function App() {
 
     const handleCardClick = async (summary: ProjectSummary) => {
         // Front-end-only project: nothing to fetch.
-        if (summary.slug === mazeSolverProject.slug) {
-            setActiveProject(mazeSolverProject);
+        const local = localProjects.find(p => p.slug === summary.slug);
+        if (local) {
+            setActiveProject(local);
             return;
         }
         setPendingTitle(summary.title);
@@ -58,7 +60,7 @@ function App() {
             </header>
 
             <section className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[...summaries, mazeSolverProject].map((summary) => (
+                {[...summaries, ...localProjects].map((summary) => (
                     <div
                         key={summary.id}
                         onClick={() => handleCardClick(summary)}
@@ -80,6 +82,8 @@ function App() {
                         {activeProject
                             ? activeProject.slug === mazeSolverProject.slug
                                 ? <MazeSolverModal project={activeProject} />
+                                : activeProject.slug === pizzaGameProject.slug
+                                ? <PizzaGameModal project={activeProject} />
                                 : activeProject.slug.includes('lunar')
                                     ? <LunarLanderModal project={activeProject} />
                                     : <WordleBotModal project={activeProject} />
