@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { NavLink, Route, Routes } from 'react-router-dom';
+import { mazeSolverProject } from './projects';
 import type { ProjectSummary, Project } from './projects';
 import { fetchProjectSummaries, fetchProjectDetail } from './api';
 import Switch from './components/Switch.tsx'
 import BackgroundLogos from "./components/BackgroundLogos.tsx";
 import WordleBotModal from './components/WordleBotModal.tsx';
 import LunarLanderModal from './components/LunarLanderModal.tsx';
+import MazeSolverModal from './components/MazeSolverModal.tsx';
 import { About } from './pages/About.tsx';
 import { Contact } from './pages/Contact.tsx';
 
@@ -22,6 +24,11 @@ function App() {
     }, []);
 
     const handleCardClick = async (summary: ProjectSummary) => {
+        // Front-end-only project: nothing to fetch.
+        if (summary.slug === mazeSolverProject.slug) {
+            setActiveProject(mazeSolverProject);
+            return;
+        }
         setPendingTitle(summary.title);
         setLoadingDetail(true);
         try {
@@ -50,7 +57,7 @@ function App() {
             </header>
 
             <section className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {summaries.map((summary) => (
+                {[...summaries, mazeSolverProject].map((summary) => (
                     <div
                         key={summary.id}
                         onClick={() => handleCardClick(summary)}
@@ -70,9 +77,11 @@ function App() {
                             <button onClick={closeModal} className="bg-gray-100 dark:bg-[#1C1A1B] rounded-full h-8 w-8">✕</button>
                         </div>
                         {activeProject
-                            ? activeProject.slug.includes('lunar')
-                                ? <LunarLanderModal project={activeProject} />
-                                : <WordleBotModal project={activeProject} />
+                            ? activeProject.slug === mazeSolverProject.slug
+                                ? <MazeSolverModal project={activeProject} />
+                                : activeProject.slug.includes('lunar')
+                                    ? <LunarLanderModal project={activeProject} />
+                                    : <WordleBotModal project={activeProject} />
                             : (
                                 <div className="flex-1 flex items-center justify-center">
                                     <FontAwesomeIcon icon={faSpinner} className="animate-spin text-4xl text-gray-400" />

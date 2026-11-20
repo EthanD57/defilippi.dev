@@ -1,6 +1,7 @@
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { faPython, faJs } from '@fortawesome/free-brands-svg-icons';
+import { faPython, faJs, faReact } from '@fortawesome/free-brands-svg-icons';
 import { faFileLines, faFile } from '@fortawesome/free-solid-svg-icons';
+import mazeSolverSource from './components/MazeSolverModal.tsx?raw';
 
 export { faPython, faJs };
 
@@ -43,3 +44,22 @@ export interface ProjectSummary {
     title: string;
     description: string;
 }
+
+// Front-end-only projects that don't live in the backend database.
+// The Source Code tab shows the component file itself.
+
+export const mazeSolverProject: Project = {
+    id: 'maze-solver',
+    slug: 'maze-solver',
+    title: 'A* Maze Solver',
+    description: 'Generate a random maze and watch an A* pathfinding bot solve it. Runs entirely in the browser.',
+    files: [
+        {
+            name: 'MazeSolverModal.tsx',
+            language: 'tsx',
+            icon: faReact,
+            type: 'file',
+            content: mazeSolverSource,
+        },
+    ],
+};
