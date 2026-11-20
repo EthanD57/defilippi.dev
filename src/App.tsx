@@ -12,6 +12,7 @@ import LunarLanderModal from './components/LunarLanderModal.tsx';
 import MazeSolverModal from './components/MazeSolverModal.tsx';
 import { About } from './pages/About.tsx';
 import { Contact } from './pages/Contact.tsx';
+import { Secret } from './pages/Secret.tsx';
 
 function App() {
     const [summaries, setSummaries] = useState<ProjectSummary[]>([]);
@@ -109,6 +110,7 @@ function App() {
                 <Route path="/" element={home} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/secret" element={<Secret />} />
             </Routes>
         </div>
     );
