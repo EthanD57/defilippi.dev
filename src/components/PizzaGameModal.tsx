@@ -1,4 +1,4 @@
-import {useEffect, useReducer, useState, type ReactNode} from 'react';
+import {useEffect, useReducer, useRef, useState, type ReactNode} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faBellConcierge, faPause, faPlay, faRotateRight, faTrashCan} from '@fortawesome/free-solid-svg-icons';
@@ -15,7 +15,7 @@ type ToppingId = 'cheese' | 'pepperoni' | 'mushroom' | 'olive' | 'pepper' | 'oni
 // `key` is the keyboard shortcut.
 const SAUCES: { id: SauceId; label: string; color: string; key: string; unlock: number }[] = [
     {id: 'tomato', label: 'Tomato', color: '#D93A26', key: '1', unlock: 1},
-    {id: 'white', label: 'Garlic White', color: '#F4EAD5', key: '2', unlock: 1},
+    {id: 'white', label: 'Garlic', color: '#F4EAD5', key: '2', unlock: 1},
     {id: 'pesto', label: 'Pesto', color: '#5C9E31', key: '3', unlock: 2},
     {id: 'bbq', label: 'BBQ', color: '#7A2E14', key: '4', unlock: 3},
 ];
@@ -25,7 +25,7 @@ const TOPPINGS: { id: ToppingId; label: string; key: string; unlock: number }[] 
     {id: 'pepperoni', label: 'Pepperoni', key: 'p', unlock: 1},
     {id: 'mushroom', label: 'Mushroom', key: 'm', unlock: 1},
     {id: 'olive', label: 'Olives', key: 'o', unlock: 1},
-    {id: 'pepper', label: 'Green Pepper', key: 'g', unlock: 2},
+    {id: 'pepper', label: 'Peppers', key: 'g', unlock: 2},
     {id: 'onion', label: 'Onion', key: 'n', unlock: 3},
     {id: 'pineapple', label: 'Pineapple', key: 'a', unlock: 4},
     {id: 'basil', label: 'Basil', key: 'b', unlock: 5},
@@ -476,27 +476,35 @@ function Ticket({order, clock, selected, onSelect}: {
             animate={{opacity: 1, y: 0, scale: 1}}
             exit={{opacity: 0, scale: 0.8, transition: {duration: 0.2}}}
             onClick={onSelect}
-            className={`shrink-0 w-28 md:w-40 rounded-2xl p-2 md:p-2.5 text-left bg-white dark:bg-[#0D0C0C] border-2 transition-colors ${
+            className={`shrink-0 h-full w-28 md:w-48 rounded-2xl p-2 flex flex-col text-left bg-white dark:bg-[#0D0C0C] border-2 transition-colors ${
                 selected ? 'border-blue-500 shadow-lg' : 'border-transparent shadow-sm hover:border-blue-300 dark:hover:border-blue-800'
             }`}
         >
-            <div className="flex items-center gap-2">
-                <CustomerFace look={order.look} mood={mood} className="w-8 h-8 md:w-10 md:h-10 shrink-0"/>
+            <div className="flex items-center gap-1.5 md:gap-2">
+                <CustomerFace look={order.look} mood={mood} className="w-7 h-7 md:w-9 md:h-9 shrink-0"/>
                 <div className="min-w-0">
-                    <div className="font-semibold text-sm truncate">{order.name}</div>
-                    <div className={`text-[11px] ${selected ? 'text-blue-500 font-semibold' : 'text-[#86868b]'}`}>
-                        {selected ? 'Serving' : 'Tap to serve'}
+                    <div className="font-semibold text-xs md:text-sm truncate">{order.name}</div>
+                    <div className={`text-[10px] md:text-[11px] ${selected ? 'text-blue-500 font-semibold' : 'text-[#86868b]'}`}>
+                        {selected ? 'Serving' : 'Waiting'}
                     </div>
                 </div>
             </div>
-            <Pizza sauce={order.sauce} toppings={order.toppings} className="hidden md:block w-16 h-16 mx-auto my-1.5"/>
-            <div className="mt-1 md:mt-0 text-[11px] md:text-xs leading-snug min-h-[2.75rem]">
-                <div className="font-semibold">{sauceInfo(order.sauce).label} sauce</div>
-                <div className="text-[#86868b]">
-                    {order.toppings.length ? order.toppings.map(t => toppingInfo(t).label).join(', ') : 'No toppings'}
+            <div className="flex-1 flex items-center gap-2 min-h-0">
+                <Pizza sauce={order.sauce} toppings={order.toppings} className="hidden md:block w-12 h-12 shrink-0"/>
+                <div className="min-w-0">
+                    <div className="text-[11px] md:text-xs font-semibold truncate">{sauceInfo(order.sauce).label} sauce</div>
+                    {/* Same icons as the topping buttons, so it's quick to match them up. */}
+                    <div className="flex flex-wrap gap-0.5 mt-0.5">
+                        {order.toppings.length ? order.toppings.map(t => (
+                            <svg key={t} viewBox="-13 -13 26 26" className="w-4 h-4 md:w-5 md:h-5" role="img" aria-label={toppingInfo(t).label}>
+                                <title>{toppingInfo(t).label}</title>
+                                <ToppingPiece id={t}/>
+                            </svg>
+                        )) : <span className="text-[11px] text-[#86868b]">No toppings</span>}
+                    </div>
                 </div>
             </div>
-            <div className="mt-2 h-1.5 rounded-full bg-gray-100 dark:bg-[#1C1A1B] overflow-hidden">
+            <div className="h-1.5 rounded-full bg-gray-100 dark:bg-[#1C1A1B] overflow-hidden">
                 <div className={`h-full rounded-full transition-[width] duration-100 ease-linear ${bar}`} style={{width: `${frac * 100}%`}}/>
             </div>
         </motion.button>
@@ -517,15 +525,15 @@ function IngredientButton({label, hotkey, active, locked, unlock, onClick, icon}
             onClick={onClick}
             disabled={locked}
             aria-pressed={active}
-            className={`flex flex-col md:flex-row items-center gap-1 md:gap-2 px-1 md:px-2.5 py-1.5 md:py-2 rounded-xl border-2 text-[11px] md:text-sm font-semibold transition-colors md:text-left disabled:opacity-40 disabled:cursor-not-allowed ${
+            className={`relative flex flex-col min-[440px]:flex-row items-center gap-0.5 min-[440px]:gap-1 md:gap-2 px-1 min-[440px]:px-1.5 md:px-2.5 py-1 min-[440px]:py-1.5 rounded-xl border-2 text-[11px] md:text-sm font-semibold transition-colors md:text-left disabled:opacity-40 disabled:cursor-not-allowed ${
                 active
                     ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/15'
                     : 'border-transparent bg-gray-100 dark:bg-[#1C1A1B] enabled:hover:bg-gray-200 dark:enabled:hover:bg-[#2a2a2a]'
             }`}
         >
-            <svg viewBox="-13 -13 26 26" className="w-6 h-6 shrink-0" aria-hidden>{icon}</svg>
+            <svg viewBox="-13 -13 26 26" className="w-5 h-5 min-[440px]:w-[18px] min-[440px]:h-[18px] md:w-6 md:h-6 shrink-0" aria-hidden>{icon}</svg>
             <span className="truncate max-w-full">{label}</span>
-            <span className="hidden md:inline ml-auto text-[10px] font-mono uppercase text-[#86868b]">
+            <span className="hidden md:block absolute top-0.5 right-1.5 text-[9px] font-mono uppercase text-[#86868b]">
                 {locked ? `Lv${unlock}` : hotkey}
             </span>
         </button>
@@ -538,7 +546,7 @@ function Strikes({count}: { count: number }) {
             {Array.from({length: MAX_STRIKES}, (_, i) => (
                 <span
                     key={i}
-                    className={`h-6 w-6 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
+                    className={`h-5 w-5 md:h-6 md:w-6 rounded-full flex items-center justify-center text-[10px] md:text-xs font-bold transition-colors ${
                         i < count ? 'bg-red-500 text-white' : 'bg-gray-100 dark:bg-[#1C1A1B] text-gray-300 dark:text-gray-600'
                     }`}
                 >✕</span>
@@ -643,47 +651,61 @@ function PizzaGame() {
         return () => window.removeEventListener('keydown', onKey);
     }, [s.phase, s.level]);
 
+    // The pizza takes whatever room is left once everything else is laid out,
+    // so the game fills the modal on a phone or a big monitor without scrolling.
+    const pizzaBoxRef = useRef<HTMLDivElement>(null);
+    const [pizzaPx, setPizzaPx] = useState(0);
+    useEffect(() => {
+        const el = pizzaBoxRef.current;
+        if (!el) return;
+        const observer = new ResizeObserver(([entry]) => {
+            const {width, height} = entry.contentRect;
+            setPizzaPx(Math.floor(Math.min(width, height)));
+        });
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
+
     const selected = s.orders.find(o => o.id === s.selectedId) ?? null;
     const levelProgress = (s.clock % LEVEL_MS) / LEVEL_MS;
 
     return (
-        <div className="relative flex flex-col gap-3 md:gap-4 p-2 md:p-4 max-w-5xl mx-auto w-full">
+        <div className="relative flex-1 min-h-0 flex flex-col gap-2 md:gap-3 p-2 md:p-4 max-w-6xl mx-auto w-full">
             {/* HUD */}
-            <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-end gap-5">
-                    <div>
-                        <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Score</div>
-                        <div className={`text-2xl md:text-3xl font-semibold tabular-nums ${s.score < 0 ? 'text-red-500' : ''}`}>{s.score}</div>
+            <div className="shrink-0 flex items-center justify-between gap-2">
+                <div className="flex items-center md:items-end gap-3 md:gap-5">
+                    <div className="flex items-baseline gap-1.5 md:block">
+                        <div className="text-[10px] md:text-[11px] font-bold text-gray-400 uppercase tracking-wider">Score</div>
+                        <div className={`text-xl md:text-3xl font-semibold tabular-nums leading-tight ${s.score < 0 ? 'text-red-500' : ''}`}>{s.score}</div>
                     </div>
-                    <div>
-                        <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Level {s.level}</div>
-                        <div className="mt-2 h-1.5 w-20 rounded-full bg-gray-100 dark:bg-[#1C1A1B] overflow-hidden">
+                    <div className="flex items-center gap-1.5 md:block md:pb-1.5">
+                        <div className="text-[10px] md:text-[11px] font-bold text-gray-400 uppercase tracking-wider"><span className="md:hidden">Lv</span><span className="hidden md:inline">Level</span> {s.level}</div>
+                        <div className="md:mt-1.5 h-1.5 w-14 md:w-20 rounded-full bg-gray-100 dark:bg-[#1C1A1B] overflow-hidden">
                             <div className="h-full bg-orange-400 transition-[width] duration-100 ease-linear" style={{width: `${levelProgress * 100}%`}}/>
                         </div>
                     </div>
-                    <div>
-                        <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Served</div>
-                        <div className="text-lg font-semibold tabular-nums">{s.served}</div>
+                    <div className="flex items-baseline gap-1.5 md:block">
+                        <div className="text-[10px] md:text-[11px] font-bold text-gray-400 uppercase tracking-wider">Served</div>
+                        <div className="text-base md:text-lg font-semibold tabular-nums leading-tight">{s.served}</div>
                     </div>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 md:gap-4">
                     <Strikes count={s.strikes}/>
                     <div className="hidden sm:block text-sm text-[#86868b] tabular-nums">Best {s.best}</div>
                     <button
                         onClick={() => dispatch({type: s.phase === 'paused' ? 'resume' : 'pause'})}
                         disabled={s.phase !== 'playing' && s.phase !== 'paused'}
                         aria-label={s.phase === 'paused' ? 'Resume' : 'Pause'}
-                        className="h-9 w-9 rounded-full bg-gray-100 dark:bg-[#1C1A1B] hover:bg-gray-200 dark:hover:bg-[#2a2a2a] disabled:opacity-40 flex items-center justify-center"
+                        className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-gray-100 dark:bg-[#1C1A1B] hover:bg-gray-200 dark:hover:bg-[#2a2a2a] disabled:opacity-40 flex items-center justify-center"
                     >
                         <FontAwesomeIcon icon={s.phase === 'paused' ? faPlay : faPause}/>
                     </button>
                 </div>
             </div>
 
-            {/* The counter: customers and their orders. Sticky on phones so the
-                orders stay in view while you scroll down to the toppings. */}
-            <div className="sticky md:static top-0 z-10">
-                <div className="rounded-2xl bg-orange-50 dark:bg-[#161415] p-2 md:p-3 min-h-[8rem] md:min-h-[14rem] flex gap-2 md:gap-3 overflow-x-auto items-start shadow-sm md:shadow-none">
+            {/* The counter: customers and their orders. Fixed height so the kitchen doesn't jump around. */}
+            <div className="shrink-0 relative">
+                <div className="h-[7.25rem] md:h-32 rounded-2xl bg-orange-50 dark:bg-[#161415] p-2 flex gap-2 md:gap-3 overflow-x-auto overflow-y-hidden">
                     <AnimatePresence mode="popLayout">
                         {s.orders.map(o => (
                             <Ticket
@@ -704,39 +726,46 @@ function PizzaGame() {
                 <Toasts toasts={s.toasts} className="flex md:hidden absolute inset-x-0 -bottom-3"/>
             </div>
 
-            {/* The kitchen. Desktop: pizza on the left, ingredients and Serve on the right.
-                Phone: pizza beside Serve, ingredients below. */}
-            <div className="relative grid grid-cols-[auto_1fr] gap-3 md:gap-x-6 md:gap-y-3 items-center">
-                <div className="relative md:row-start-1 md:row-span-3 rounded-3xl md:rounded-[2rem] bg-[#E7B77A] dark:bg-[#5A3A22] p-2 md:p-4 shadow-inner">
-                    <Pizza sauce={s.sauce} toppings={s.toppings} animated className="w-28 h-28 sm:w-44 sm:h-44 md:w-64 md:h-64"/>
-                    <Toasts toasts={s.toasts} className="hidden md:flex absolute inset-x-0 top-2"/>
+            {/* The kitchen fills the rest. Desktop: pizza on the left, ingredients and Serve
+                on the right. Phone: pizza beside Serve, ingredients below. */}
+            <div className="flex-1 min-h-0 grid gap-2 md:gap-x-6 md:gap-y-2
+                grid-cols-[minmax(0,1fr)_9rem] grid-rows-[minmax(6.5rem,1fr)_auto_auto]
+                md:grid-cols-[minmax(0,1fr)_minmax(0,36rem)] md:grid-rows-[minmax(0,1fr)_auto_auto_auto_minmax(0,1fr)]">
+                {/* Measured box; the pizza is absolutely positioned inside so it never stretches the layout. */}
+                <div ref={pizzaBoxRef} className="relative min-w-0 min-h-0 md:row-start-1 md:row-end-6">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div
+                            className="relative rounded-[18%] bg-[#E7B77A] dark:bg-[#5A3A22] shadow-inner p-[5%]"
+                            style={{width: pizzaPx, height: pizzaPx}}
+                        >
+                            <Pizza sauce={s.sauce} toppings={s.toppings} animated className="w-full h-full"/>
+                            <Toasts toasts={s.toasts} className="hidden md:flex absolute inset-x-0 top-2"/>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="md:col-start-2 md:row-start-3 flex flex-col gap-2 min-w-0">
+                <div className="self-center md:col-start-2 md:row-start-4 flex flex-col gap-2 min-w-0">
                     <div className="flex flex-col md:flex-row gap-2">
                         <button
                             onClick={() => dispatch({type: 'serve'})}
                             disabled={s.phase !== 'playing' || !selected}
-                            className={`${PRIMARY_BTN} md:flex-1 min-w-0`}
+                            className={`${PRIMARY_BTN} px-3 md:px-6 text-sm md:text-base md:flex-1 min-w-0`}
                         >
                             <FontAwesomeIcon icon={faBellConcierge}/>
-                            <span className="truncate">{selected ? `Serve ${selected.name}` : 'Serve'}</span>
+                            <span className="truncate">Serve<span className="hidden md:inline">{selected ? ` ${selected.name}` : ''}</span></span>
                         </button>
-                        <button onClick={() => dispatch({type: 'clear'})} className={SECONDARY_BTN}>
+                        <button onClick={() => dispatch({type: 'clear'})} className={`${SECONDARY_BTN} text-sm md:text-base`}>
                             <FontAwesomeIcon icon={faTrashCan}/>
                             Trash
                         </button>
                     </div>
-                    <p className="text-xs text-[#86868b]">
-                        <span className="hidden md:inline">
-                            Keys: 1–4 sauce, letters for toppings, Enter to serve, X to trash, ←/→ to switch customer, Esc to pause.
-                        </span>
-                        <span className="md:hidden">Tap a ticket to choose who you're serving.</span>
+                    <p className="hidden md:block text-xs text-[#86868b]">
+                        Keys: 1–4 sauce, letters for toppings, Enter to serve, X to trash, ←/→ to switch customer, Esc to pause.
                     </p>
                 </div>
 
-                <div className="col-span-2 md:col-span-1 md:col-start-2 md:row-start-1">
-                    <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Sauce</h4>
+                <div className="col-span-2 md:col-span-1 md:col-start-2 md:row-start-2">
+                    <h4 className="text-[10px] md:text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Sauce</h4>
                     <div className="grid grid-cols-4 gap-1.5 md:gap-2">
                         {SAUCES.map(x => (
                             <IngredientButton
@@ -752,8 +781,8 @@ function PizzaGame() {
                         ))}
                     </div>
                 </div>
-                <div className="col-span-2 md:col-span-1 md:col-start-2 md:row-start-2">
-                    <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Toppings</h4>
+                <div className="col-span-2 md:col-span-1 md:col-start-2 md:row-start-3">
+                    <h4 className="text-[10px] md:text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Toppings</h4>
                     <div className="grid grid-cols-4 gap-1.5 md:gap-2">
                         {TOPPINGS.map(x => (
                             <IngredientButton
@@ -776,7 +805,7 @@ function PizzaGame() {
                     <Pizza sauce="tomato" toppings={['cheese', 'pepperoni', 'mushroom', 'basil']} className="w-24 h-24"/>
                     <h3 className="text-2xl font-semibold">Pizza Rush</h3>
                     <ul className="text-sm text-[#86868b] text-left list-disc pl-5 space-y-1">
-                        <li>Customers walk in with orders. Pick the sauce and toppings, then serve.</li>
+                        <li>Customers walk in with orders. Tap a ticket to pick who you're serving, add the sauce and toppings, then serve.</li>
                         <li>Perfect pizzas score points, more if you're quick.</li>
                         <li>A wrong or late order costs points and a strike. Three strikes and the shift's over.</li>
                         <li>It gets busier every 30 seconds.</li>
@@ -820,18 +849,18 @@ export default function PizzaGameModal({project}: { project: Project }) {
     const [selectedFile, setSelectedFile] = useState<ProjectFile | null>(files[0] ?? null);
 
     const tabClass = (tab: typeof activeTab) =>
-        `px-3 sm:px-6 py-1.5 rounded-lg text-sm transition-all ${activeTab === tab ? 'bg-white dark:bg-gray-600 shadow-sm' : 'opacity-50'}`;
+        `px-3 sm:px-6 py-1 md:py-1.5 rounded-lg text-xs md:text-sm transition-all ${activeTab === tab ? 'bg-white dark:bg-gray-600 shadow-sm' : 'opacity-50'}`;
 
     return (
         <div className="flex-1 min-h-0 overflow-y-auto flex flex-col p-2 bg-white dark:bg-[#0D0C0C] rounded-xl overflow-x-hidden">
-            <div className="flex justify-center p-2">
+            <div className="shrink-0 flex justify-center p-1 md:p-2">
                 <div className="flex bg-gray-100 dark:bg-[#1C1A1B] p-1 rounded-xl">
                     <button onClick={() => setActiveTab('code')} className={tabClass('code')}>Source Code</button>
                     <button onClick={() => setActiveTab('play')} className={tabClass('play')}>Play</button>
                 </div>
             </div>
 
-            <div className="flex-1 overflow-x-auto">
+            <div className={activeTab === 'code' ? 'flex-1 overflow-x-auto' : 'flex-1 min-h-0 flex flex-col'}>
                 {activeTab === 'code' ? (
                     <div className="flex flex-col md:flex-row h-full">
                         <aside className="hidden md:flex flex-col w-max shrink-0 border-r border-gray-100 dark:border-[#1C1A1B] bg-gray-50/50 dark:bg-[#0D0C0C] p-4 overflow-y-auto">

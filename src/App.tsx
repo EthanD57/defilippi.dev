@@ -73,9 +73,9 @@ function App() {
             </section>
 
             {(activeProject !== null || loadingDetail) && (
-                <div className="fixed inset-0 z-100 flex items-center justify-center p-4 md:p-10 bg-black/20 backdrop-blur-md">
-                    <div className="bg-white dark:bg-[#0D0C0C] w-full max-w-6xl h-[85vh] rounded-[40px] shadow-2xl flex flex-col overflow-hidden">
-                        <div className="px-8 py-5 border-b border-gray-100 dark:border-[#1C1A1B] flex justify-between items-center bg-white dark:bg-[#0D0C0C]">
+                <div className="fixed inset-0 z-100 flex items-center justify-center p-2 md:p-10 bg-black/20 backdrop-blur-md">
+                    <div className="bg-white dark:bg-[#0D0C0C] w-full max-w-6xl h-[94dvh] md:h-[85vh] rounded-[28px] md:rounded-[40px] shadow-2xl flex flex-col overflow-hidden">
+                        <div className="px-5 py-3 md:px-8 md:py-5 border-b border-gray-100 dark:border-[#1C1A1B] flex justify-between items-center bg-white dark:bg-[#0D0C0C]">
                             <h2 className="text-xl font-semibold">{activeProject?.title ?? pendingTitle}</h2>
                             <button onClick={closeModal} className="bg-gray-100 dark:bg-[#1C1A1B] rounded-full h-8 w-8">✕</button>
                         </div>
